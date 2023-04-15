@@ -7,9 +7,10 @@ import javafx.scene.image.ImageView;
 import java.util.Objects;
 
 public class King extends Piece{
-    public King(String color) {
+    public King(char color) {
         super(color);
-        piece = 0;
+        this.icon = 0;
+        this.piece = 'K';
     }
 
 

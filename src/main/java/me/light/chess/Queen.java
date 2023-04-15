@@ -2,8 +2,9 @@ package me.light.chess;
 
 public class Queen extends Piece{
 
-    public Queen(String color) {
+    public Queen(char color) {
         super(color);
-        this.piece = 1;
+        this.icon = 1;
+        this.piece = 'Q';
     }
 }

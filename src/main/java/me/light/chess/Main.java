@@ -20,7 +20,8 @@ public class Main extends Application
     Button multi = new Button("Multiplayer");
     Button load = new Button("Load Game");
 
-    single.setOnMousePressed(e -> primaryStage.setScene(new Scene(new GameBoard("single"), 400, 400)));
+    single.setOnMousePressed(e -> primaryStage.setScene(new Scene(new GameBoard(primaryStage, "single"), 400, 400)));
+    load.setOnMousePressed(e -> primaryStage.setScene(new Scene(new GameBoard(primaryStage, "load"), 400, 400)));
     
     vbox.getChildren().addAll(single, multi, load);
     Scene scene = new Scene(vbox, 300, 200);

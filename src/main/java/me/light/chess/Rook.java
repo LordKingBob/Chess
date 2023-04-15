@@ -2,8 +2,9 @@ package me.light.chess;
 
 public class Rook extends Piece{
 
-    public Rook(String color) {
+    public Rook(char color) {
         super(color);
-        this.piece = 4;
+        this.icon = 4;
+        this.piece = 'R';
     }
 }

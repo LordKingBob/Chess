@@ -2,8 +2,9 @@ package me.light.chess;
 
 public class Knight extends Piece{
 
-    public Knight(String color) {
+    public Knight(char color) {
         super(color);
-        this.piece = 3;
+        this.icon = 3;
+        this.piece = 'N';
     }
 }

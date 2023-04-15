@@ -2,8 +2,9 @@ package me.light.chess;
 
 public class Pawn extends Piece{
 
-    public Pawn(String color) {
+    public Pawn(char color) {
         super(color);
-        this.piece = 5;
+        this.icon = 5;
+        this.piece = 'P';
     }
 }
