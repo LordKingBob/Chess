@@ -1,16 +1,21 @@
 package me.light.chess;
 
+import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.util.Pair;
 
 public class Piece {
     public int icon;
     public char piece;
-    public char color;
+    public final char color;
+    private int x, y;
+
     public Piece(char color){
         this.color = color;
         this.piece = '-';
+
     }
 
     public static Piece piece(char color, char piece){
@@ -34,7 +39,13 @@ public class Piece {
         return img;
     }
 
-    public GameCell[] availableMoves(){
-        return null;
+
+    public Pair<Integer, Integer> getCoords() {
+        return new Pair<>(x, y);
+    }
+
+    public void setCoords(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 }

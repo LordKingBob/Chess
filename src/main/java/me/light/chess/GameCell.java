@@ -10,10 +10,13 @@ import javafx.scene.paint.Color;
 public class GameCell extends StackPane {
   private Piece piece;
   private Color color;
+  public final int r, c;
 
-  public GameCell(Color color, Piece piece) {
+  public GameCell(Color color, Piece piece, int r, int c) {
     this.piece = piece;
     this.color = color;
+    this.r = r;
+    this.c = c;
     this.setHeight(50);
     this.setWidth(50);
     Canvas canvas = new Canvas(50, 50);
@@ -33,6 +36,7 @@ public class GameCell extends StackPane {
     if(this.getChildren().size() == 2)
       this.getChildren().remove(1);
     this.piece = piece;
+
     if(piece != null)
       this.getChildren().add(piece.getShape());
   }

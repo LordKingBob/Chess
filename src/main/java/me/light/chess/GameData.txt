@@ -1,9 +1,9 @@
-1
-WR WN WB WK WQ WB WN WR 
-WP WP WP WP WP WP WP WP 
+0
+- - - - - - - - 
+- - - - - - - - 
+- - - - - - - - 
+- - - WK - - - - 
 - - - - - - - - 
 - - - - - - - - 
 - - - - - - - - 
 - - - - - - - - 
-BP BP BP BP BP BP BP BP 
-BR BN BB BK BQ BB BN BR 
