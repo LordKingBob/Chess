@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class King extends Piece{
 
-    private boolean hasCastled;
+    public boolean hasCastled;
     public King(char color) {
         super(color);
         this.icon = 0;

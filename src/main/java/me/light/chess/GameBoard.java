@@ -11,6 +11,8 @@ import java.util.ArrayList;
 
 public class GameBoard extends GridPane {
     private int currentTurn;
+
+    private GameCell selectedPiece;
     private ArrayList<GameCell> blackPieces = new ArrayList<>();
     private ArrayList<GameCell> whitePieces = new ArrayList<>();
 
@@ -18,7 +20,7 @@ public class GameBoard extends GridPane {
         this.currentTurn = 0;
       for (int r = 0; r < 8; ++r){
         for (int c = 0; c < 8; ++c){
-          this.add(new GameCell((r + c) % 2 == 0 ? Color.WHITE : Color.BROWN, null, r, c), r, c);
+          this.add(new GameCell(this, (r + c) % 2 == 0 ? Color.WHITE : Color.BROWN, null, r, c), c, r);
         }
       }
       if(str.equals("single"))
@@ -34,53 +36,86 @@ public class GameBoard extends GridPane {
       primaryStage.widthProperty().addListener(stageSizeListener);
       primaryStage.heightProperty().addListener(stageSizeListener);
 
-      this.takeTurn();
     }
 
-    public void takeTurn(){
-        ArrayList<GameCell> moves = availableMoves();
-        if(moves.size() > 0)
-            System.out.println("You have " + moves.size() + " available moves");
+    public void takeTurn(GameCell cell){
+        if(cell.getPiece() != null && (this.currentTurn % 2 == 0 ? 'W' : 'B') == cell.getPiece().color) {
+            ArrayList<GameCell> moves = getMovesForPiece(cell);
+            if (moves.size() > 0 && selectedPiece == null) {
+                selectedPiece = cell;
+                cell.highlightCell();
+            } else if (selectedPiece == cell) {
+                selectedPiece = null;
+                cell.highlightCell();
+            }
 
-        // Transfers turn to next player
-//        this.currentTurn += 1;
-//        this.reverseBoard();
+
+        }
+        if(selectedPiece != null){
+            ArrayList<GameCell> moves = getMovesForPiece(selectedPiece);
+            if(moves.contains(cell)) {
+                selectedPiece.highlightCell();
+                movePiece(selectedPiece, cell);
+                selectedPiece = null;
+
+                // Transfers turn to next player
+            this.currentTurn += 1;
+            this.reverseBoard();
+            }
+        }
     }
 
     public ArrayList<GameCell> availableMoves(){
         ArrayList<GameCell> gameCell = new ArrayList<>();
         for(GameCell cell : this.currentTurn % 2 == 0 ? whitePieces : blackPieces){
-           if (cell.getPiece().piece == 'P') {
-           } else if (cell.getPiece().piece == 'Q') {
-               for(int x = -1; x<=1;x+= 2) {
-                   for (int y = -1; y <= 1; y += 2)
-                       gameCell.addAll(linearMoves(cell, x, y));
-                   gameCell.addAll(linearMoves(cell, x, 0));
-                   gameCell.addAll(linearMoves(cell, 0, x));
-               }
-           } else if (cell.getPiece().piece == 'N') {
-               int[] x = {-2, -2, -1, -1, 1, 1, 2, 2};
-               int[] y = {1, -1, 2, -2, 2, -2, 1, -1};
-               for(int i = 0; i < 8; ++i){
-                   if(checkIfValid(cell, cell.r + x[i], cell.c + y[i])) {
-                       gameCell.add(this.getSquare(cell.c + y[i], cell.r + x[i]));
-                   }
-               }
-           } else if (cell.getPiece().piece == 'R') {
-                for(int x = -1; x<=1;x+= 2){
-                    gameCell.addAll(linearMoves(cell, x, 0));
-                    gameCell.addAll(linearMoves(cell, 0, x));
+           gameCell.addAll(getMovesForPiece(cell));
+        }
+        return gameCell;
+    }
+
+    public ArrayList<GameCell> getMovesForPiece(GameCell cell){
+        ArrayList<GameCell> gameCell = new ArrayList<>();
+        Piece piece = cell.getPiece();
+        if (piece.piece == 'P') {
+            Pawn pawn = (Pawn)piece;
+            if(checkIfValid(cell, cell.r - 1, cell.c) && this.getSquare(cell.r - 1, cell.c).getPiece() == null) {
+                gameCell.add(this.getSquare(cell.r - 1, cell.c));
+                if (!pawn.hasMoved && this.getSquare(cell.r - 2, cell.c).getPiece() == null)
+                    gameCell.add(this.getSquare(cell.r - 2, cell.c));
+            }
+            if(checkIfValid(cell, cell.r - 1, cell.c + 1) && this.getSquare(cell.r - 1, cell.c + 1).getPiece() != null)
+                gameCell.add(this.getSquare(cell.r - 1, cell.c + 1));
+            if(checkIfValid(cell, cell.r - 1, cell.c - 1) && this.getSquare(cell.r - 1, cell.c - 1).getPiece() != null)
+                gameCell.add(this.getSquare(cell.r - 1, cell.c - 1));
+        } else if (piece.piece == 'Q') {
+            for(int x = -1; x<=1;x+= 2) {
+                for (int y = -1; y <= 1; y += 2)
+                    gameCell.addAll(linearMoves(cell, x, y));
+                gameCell.addAll(linearMoves(cell, x, 0));
+                gameCell.addAll(linearMoves(cell, 0, x));
+            }
+        } else if (piece.piece == 'N') {
+            int[] x = {-2, -2, -1, -1, 1, 1, 2, 2};
+            int[] y = {1, -1, 2, -2, 2, -2, 1, -1};
+            for(int i = 0; i < 8; ++i){
+                if(checkIfValid(cell, cell.r + x[i], cell.c + y[i])) {
+                    gameCell.add(this.getSquare(cell.c + y[i], cell.r + x[i]));
                 }
-           } else if (cell.getPiece().piece == 'B') {
-               for(int x = -1; x<=1;x+= 2)
-                   for(int y = -1; y<=1; y+= 2)
-                       gameCell.addAll(linearMoves(cell, x, y));
-           } else if (cell.getPiece().piece == 'K') {
-                for(int x = -1; x<=1; ++x)
-                    for(int y = -1; y<=1; ++y)
-                        if(!(x == y && y == 0) && checkIfValid(cell, cell.r + x, cell.c + y))
-                            gameCell.add(this.getSquare(cell.r + x, cell.c + y));
-           }
+            }
+        } else if (piece.piece == 'R') {
+            for(int x = -1; x<=1;x+= 2){
+                gameCell.addAll(linearMoves(cell, x, 0));
+                gameCell.addAll(linearMoves(cell, 0, x));
+            }
+        } else if (piece.piece == 'B') {
+            for(int x = -1; x<=1;x+= 2)
+                for(int y = -1; y<=1; y+= 2)
+                    gameCell.addAll(linearMoves(cell, x, y));
+        } else if (piece.piece == 'K') {
+            for(int x = -1; x <= 1; ++x)
+                for(int y = -1; y <= 1; ++y)
+                    if(!(x == y && y == 0) && checkIfValid(cell, cell.r + x, cell.c + y))
+                        gameCell.add(this.getSquare(cell.r + x, cell.c + y));
         }
         return gameCell;
     }

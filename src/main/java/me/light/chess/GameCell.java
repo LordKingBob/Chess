@@ -12,7 +12,7 @@ public class GameCell extends StackPane {
   private Color color;
   public final int r, c;
 
-  public GameCell(Color color, Piece piece, int r, int c) {
+  public GameCell(GameBoard board, Color color, Piece piece, int r, int c) {
     this.piece = piece;
     this.color = color;
     this.r = r;
@@ -26,6 +26,7 @@ public class GameCell extends StackPane {
     this.getChildren().add(canvas);
     if(piece != null)
       this.getChildren().add(piece.getShape());
+    this.setOnMouseClicked(e -> { board.takeTurn(this); });
   }
 
   public Piece getPiece() {
@@ -39,6 +40,18 @@ public class GameCell extends StackPane {
 
     if(piece != null)
       this.getChildren().add(piece.getShape());
+  }
+
+  public void highlightCell(){
+    if(this.getChildren().size() == 2){
+      Canvas canvas = new Canvas(50, 50);
+      GraphicsContext gc = canvas.getGraphicsContext2D();
+      gc.setLineWidth(5);
+      gc.strokeRect(0, 0, 50, 50);
+      this.getChildren().add(canvas);
+    } else {
+      this.getChildren().remove(2);
+    }
   }
 
   @Override
