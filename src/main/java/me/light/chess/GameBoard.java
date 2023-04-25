@@ -199,10 +199,6 @@ public class GameBoard extends GridPane {
                         continue;
                     GameCell cell = this.getSquare(count / 8, count % 8);
                     cell.setPiece(Piece.piece(s.charAt(0), s.charAt(1)));
-//                    if(s.charAt(0) == 'W')
-//                        this.whitePieces.add(cell);
-//                    else
-//                        this.blackPieces.add(cell);
                 }
             }
         } catch (IOException e){
@@ -225,13 +221,9 @@ public class GameBoard extends GridPane {
         for(int c = 0; c < 8; ++c){
             char[] seq = {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'};
             this.getSquare(1, c).setPiece(new Pawn('B'));
-//            this.blackPieces.add(this.getSquare(1, c));
             this.getSquare(6, c).setPiece(new Pawn('W'));
-//            this.whitePieces.add(this.getSquare(6, c));
             this.getSquare(0, c).setPiece(Piece.piece('B', seq[c]));
-//            this.blackPieces.add(this.getSquare(0, c));
             this.getSquare(7, c).setPiece(Piece.piece('W', seq[c]));
-//            this.whitePieces.add(this.getSquare(7, c));
         }
     }
 

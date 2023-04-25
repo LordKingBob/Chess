@@ -47,14 +47,7 @@ public class GameCell extends StackPane {
       this.getChildren().remove(1);
     this.piece = piece;
     if(this.piece != null) {
-//      Node node = null;
-//      if(this.getChildren().size() == 2) {
-//        node = this.getChildren().get(1);
-//        this.getChildren().remove(1);
-//      }
       this.getChildren().add(this.piece.getShape());
-//      if(node != null)
-//        this.getChildren().add(node);
       if(this.piece.color == 'W')
         board.whitePieces.add(this);
       else

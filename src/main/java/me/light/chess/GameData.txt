@@ -1,9 +1,9 @@
-5
-WR WN WB WK - WB WN WR 
-WP WP WP - WP WP WP WP 
+2
+BR BN BB BQ BK BB BN BR 
+BP BP BP BP - BP BP BP 
 - - - - - - - - 
-- - - WP - - - - 
-- - - WQ - - - - 
-- BP - - - - - - 
-BP - BP - BP BP BP BP 
-BR BN BB BK BQ BB BN BR 
+- - - - BP - - - 
+- - - - WP - - - 
+- - - - - - - - 
+WP WP WP WP - WP WP WP 
+WR WN WB WQ WK WB WN WR 
