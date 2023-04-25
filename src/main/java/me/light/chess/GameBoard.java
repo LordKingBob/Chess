@@ -65,59 +65,77 @@ public class GameBoard extends GridPane {
         }
     }
 
-    public ArrayList<GameCell> availableMoves(){
-        ArrayList<GameCell> gameCell = new ArrayList<>();
-        for(GameCell cell : this.currentTurn % 2 == 0 ? whitePieces : blackPieces){
-           gameCell.addAll(getMovesForPiece(cell));
+    public ArrayList<GameCell> getOpponentMoves(){
+        ArrayList<GameCell> cells = new ArrayList<>();
+        for(GameCell cell : this.currentTurn % 2 == 1 ? whitePieces : blackPieces){
+           cells.addAll(getMovesForPiece(cell));
         }
-        return gameCell;
+        return cells;
+    }
+
+    public boolean inCheck(){
+        boolean check = false;
+        ArrayList<GameCell> cells = getOpponentMoves();
+        for(GameCell cell : this.currentTurn % 2 == 0 ? whitePieces : blackPieces){
+            if(cell.getPiece().piece == 'K'){
+                if(cells.contains(cell))
+                    return true;
+            }
+        }
+        return false;
     }
 
     public ArrayList<GameCell> getMovesForPiece(GameCell cell){
-        ArrayList<GameCell> gameCell = new ArrayList<>();
+        ArrayList<GameCell> cells = new ArrayList<>();
         Piece piece = cell.getPiece();
+        boolean inCheck = cell.getPiece().color == (this.currentTurn % 2 == 0 ? 'W' : 'B') && inCheck();
         if (piece.piece == 'P') {
             Pawn pawn = (Pawn)piece;
             if(checkIfValid(cell, cell.r - 1, cell.c) && this.getSquare(cell.r - 1, cell.c).getPiece() == null) {
-                gameCell.add(this.getSquare(cell.r - 1, cell.c));
+                cells.add(this.getSquare(cell.r - 1, cell.c));
                 if (!pawn.hasMoved && this.getSquare(cell.r - 2, cell.c).getPiece() == null)
-                    gameCell.add(this.getSquare(cell.r - 2, cell.c));
+                    cells.add(this.getSquare(cell.r - 2, cell.c));
             }
             if(checkIfValid(cell, cell.r - 1, cell.c + 1) && this.getSquare(cell.r - 1, cell.c + 1).getPiece() != null)
-                gameCell.add(this.getSquare(cell.r - 1, cell.c + 1));
+                cells.add(this.getSquare(cell.r - 1, cell.c + 1));
             if(checkIfValid(cell, cell.r - 1, cell.c - 1) && this.getSquare(cell.r - 1, cell.c - 1).getPiece() != null)
-                gameCell.add(this.getSquare(cell.r - 1, cell.c - 1));
+                cells.add(this.getSquare(cell.r - 1, cell.c - 1));
         } else if (piece.piece == 'Q') {
             for(int x = -1; x<=1;x+= 2) {
                 for (int y = -1; y <= 1; y += 2)
-                    gameCell.addAll(linearMoves(cell, x, y));
-                gameCell.addAll(linearMoves(cell, x, 0));
-                gameCell.addAll(linearMoves(cell, 0, x));
+                    cells.addAll(linearMoves(cell, x, y));
+                cells.addAll(linearMoves(cell, x, 0));
+                cells.addAll(linearMoves(cell, 0, x));
             }
         } else if (piece.piece == 'N') {
             int[] x = {-2, -2, -1, -1, 1, 1, 2, 2};
             int[] y = {1, -1, 2, -2, 2, -2, 1, -1};
             for(int i = 0; i < 8; ++i){
                 if(checkIfValid(cell, cell.r + x[i], cell.c + y[i])) {
-                    gameCell.add(this.getSquare(cell.c + y[i], cell.r + x[i]));
+                    cells.add(this.getSquare(cell.c + y[i], cell.r + x[i]));
                 }
             }
         } else if (piece.piece == 'R') {
             for(int x = -1; x<=1;x+= 2){
-                gameCell.addAll(linearMoves(cell, x, 0));
-                gameCell.addAll(linearMoves(cell, 0, x));
+                cells.addAll(linearMoves(cell, x, 0));
+                cells.addAll(linearMoves(cell, 0, x));
             }
         } else if (piece.piece == 'B') {
             for(int x = -1; x<=1;x+= 2)
                 for(int y = -1; y<=1; y+= 2)
-                    gameCell.addAll(linearMoves(cell, x, y));
+                    cells.addAll(linearMoves(cell, x, y));
         } else if (piece.piece == 'K') {
             for(int x = -1; x <= 1; ++x)
                 for(int y = -1; y <= 1; ++y)
                     if(!(x == y && y == 0) && checkIfValid(cell, cell.r + x, cell.c + y))
-                        gameCell.add(this.getSquare(cell.r + x, cell.c + y));
+                        cells.add(this.getSquare(cell.r + x, cell.c + y));
         }
-        return gameCell;
+
+        if(inCheck){
+            System.out.println("OMG STOP WHATEVER U DOING AND GET OUT OF CHECK");
+        }
+
+        return cells;
     }
 
     public ArrayList<GameCell> linearMoves(GameCell cell, int x, int y){
