@@ -12,6 +12,8 @@ public class GameCell extends StackPane {
   private Color color;
   public final int r, c;
 
+  private GameBoard board;
+
   public GameCell(GameBoard board, Color color, Piece piece, int r, int c) {
     this.piece = piece;
     this.color = color;
@@ -19,6 +21,7 @@ public class GameCell extends StackPane {
     this.c = c;
     this.setHeight(50);
     this.setWidth(50);
+    this.board = board;
     Canvas canvas = new Canvas(50, 50);
     GraphicsContext gc = canvas.getGraphicsContext2D();
     gc.setFill(color);
@@ -34,20 +37,38 @@ public class GameCell extends StackPane {
   }
 
   public void setPiece(Piece piece) {
-    if(this.getChildren().size() == 2)
+    if(this.piece != null) {
+      if(this.piece.color == 'W')
+        board.whitePieces.remove(this);
+      else
+        board.blackPieces.remove(this);
+    }
+    if(this.getChildren().size() >= 2)
       this.getChildren().remove(1);
     this.piece = piece;
+    if(this.piece != null) {
+//      Node node = null;
+//      if(this.getChildren().size() == 2) {
+//        node = this.getChildren().get(1);
+//        this.getChildren().remove(1);
+//      }
+      this.getChildren().add(this.piece.getShape());
+//      if(node != null)
+//        this.getChildren().add(node);
+      if(this.piece.color == 'W')
+        board.whitePieces.add(this);
+      else
+        board.blackPieces.add(this);
 
-    if(piece != null)
-      this.getChildren().add(piece.getShape());
+    }
   }
 
   public void highlightCell(){
     if(this.getChildren().size() == 2){
-      Canvas canvas = new Canvas(50, 50);
+      Canvas canvas = new Canvas(this.getHeight(), this.getWidth());
       GraphicsContext gc = canvas.getGraphicsContext2D();
       gc.setLineWidth(5);
-      gc.strokeRect(0, 0, 50, 50);
+      gc.strokeRect(0, 0, this.getHeight()-2, this.getWidth()-2);
       this.getChildren().add(canvas);
     } else {
       this.getChildren().remove(2);

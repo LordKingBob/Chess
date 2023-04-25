@@ -13,8 +13,11 @@ public class GameBoard extends GridPane {
     private int currentTurn;
 
     private GameCell selectedPiece;
-    private ArrayList<GameCell> blackPieces = new ArrayList<>();
-    private ArrayList<GameCell> whitePieces = new ArrayList<>();
+    public ArrayList<GameCell> blackPieces = new ArrayList<>();
+    public ArrayList<GameCell> whitePieces = new ArrayList<>();
+    private ArrayList<GameCell> moves;
+
+    private boolean lockPieceCheck;
 
     public GameBoard(Stage primaryStage, String str){
         this.currentTurn = 0;
@@ -39,11 +42,14 @@ public class GameBoard extends GridPane {
     }
 
     public void takeTurn(GameCell cell){
-        if(cell.getPiece() != null && (this.currentTurn % 2 == 0 ? 'W' : 'B') == cell.getPiece().color) {
-            ArrayList<GameCell> moves = getMovesForPiece(cell);
-            if (moves.size() > 0 && selectedPiece == null) {
-                selectedPiece = cell;
-                cell.highlightCell();
+        if(cell.getPiece() != null && (getTurn() == 'W' ? 'W' : 'B') == cell.getPiece().color) {
+            if(selectedPiece == null){
+                moves = getMovesForPiece(cell);
+                System.out.println(moves.size());
+                if (moves.size() > 0) {
+                    selectedPiece = cell;
+                    cell.highlightCell();
+                }
             } else if (selectedPiece == cell) {
                 selectedPiece = null;
                 cell.highlightCell();
@@ -51,13 +57,11 @@ public class GameBoard extends GridPane {
 
 
         }
-        if(selectedPiece != null){
-            ArrayList<GameCell> moves = getMovesForPiece(selectedPiece);
+        else if(selectedPiece != null){
             if(moves.contains(cell)) {
                 selectedPiece.highlightCell();
                 movePiece(selectedPiece, cell);
                 selectedPiece = null;
-
                 // Transfers turn to next player
             this.currentTurn += 1;
             this.reverseBoard();
@@ -65,18 +69,21 @@ public class GameBoard extends GridPane {
         }
     }
 
-    public ArrayList<GameCell> getOpponentMoves(){
+    public ArrayList<GameCell> getMoves(char color){
         ArrayList<GameCell> cells = new ArrayList<>();
-        for(GameCell cell : this.currentTurn % 2 == 1 ? whitePieces : blackPieces){
+        for(GameCell cell : color == 'W' ? whitePieces : blackPieces){
            cells.addAll(getMovesForPiece(cell));
         }
         return cells;
     }
 
+    public char getTurn(){
+        return this.currentTurn % 2 == 0 ? 'W' : 'B';
+    }
+
     public boolean inCheck(){
-        boolean check = false;
-        ArrayList<GameCell> cells = getOpponentMoves();
-        for(GameCell cell : this.currentTurn % 2 == 0 ? whitePieces : blackPieces){
+        ArrayList<GameCell> cells = getMoves(getTurn() == 'W' ? 'B' : 'W');
+        for(GameCell cell : getTurn() == 'W' ? whitePieces : blackPieces){
             if(cell.getPiece().piece == 'K'){
                 if(cells.contains(cell))
                     return true;
@@ -85,10 +92,25 @@ public class GameBoard extends GridPane {
         return false;
     }
 
+    public boolean simulateMoveForCheck(GameCell cell1, GameCell cell2){
+        System.out.println(cell1.getPiece() + " " + cell2.getPiece());
+        Piece p1 = cell1.getPiece();
+        Piece p2 = cell2.getPiece();
+        lockPieceCheck = true;
+        cell1.setPiece(p2);
+        cell2.setPiece(p1);
+        reverseBoard();
+        boolean inCheck = inCheck();
+        reverseBoard();
+        cell1.setPiece(p1);
+        cell2.setPiece(p2);
+        lockPieceCheck = false;
+        return inCheck;
+    }
+
     public ArrayList<GameCell> getMovesForPiece(GameCell cell){
         ArrayList<GameCell> cells = new ArrayList<>();
         Piece piece = cell.getPiece();
-        boolean inCheck = cell.getPiece().color == (this.currentTurn % 2 == 0 ? 'W' : 'B') && inCheck();
         if (piece.piece == 'P') {
             Pawn pawn = (Pawn)piece;
             if(checkIfValid(cell, cell.r - 1, cell.c) && this.getSquare(cell.r - 1, cell.c).getPiece() == null) {
@@ -131,10 +153,7 @@ public class GameBoard extends GridPane {
                         cells.add(this.getSquare(cell.r + x, cell.c + y));
         }
 
-        if(inCheck){
-            System.out.println("OMG STOP WHATEVER U DOING AND GET OUT OF CHECK");
-        }
-
+        cells.removeIf(c -> !lockPieceCheck && simulateMoveForCheck(cell, c));
         return cells;
     }
 
@@ -160,7 +179,6 @@ public class GameBoard extends GridPane {
     }
 
     public void movePiece(GameCell p1, GameCell p2){
-
         p2.setPiece(p1.getPiece());
         p1.setPiece(null);
     }
@@ -181,10 +199,10 @@ public class GameBoard extends GridPane {
                         continue;
                     GameCell cell = this.getSquare(count / 8, count % 8);
                     cell.setPiece(Piece.piece(s.charAt(0), s.charAt(1)));
-                    if(s.charAt(0) == 'W')
-                        this.whitePieces.add(cell);
-                    else
-                        this.blackPieces.add(cell);
+//                    if(s.charAt(0) == 'W')
+//                        this.whitePieces.add(cell);
+//                    else
+//                        this.blackPieces.add(cell);
                 }
             }
         } catch (IOException e){
@@ -207,13 +225,13 @@ public class GameBoard extends GridPane {
         for(int c = 0; c < 8; ++c){
             char[] seq = {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'};
             this.getSquare(1, c).setPiece(new Pawn('B'));
-            this.blackPieces.add(this.getSquare(1, c));
+//            this.blackPieces.add(this.getSquare(1, c));
             this.getSquare(6, c).setPiece(new Pawn('W'));
-            this.whitePieces.add(this.getSquare(6, c));
+//            this.whitePieces.add(this.getSquare(6, c));
             this.getSquare(0, c).setPiece(Piece.piece('B', seq[c]));
-            this.blackPieces.add(this.getSquare(0, c));
+//            this.blackPieces.add(this.getSquare(0, c));
             this.getSquare(7, c).setPiece(Piece.piece('W', seq[c]));
-            this.whitePieces.add(this.getSquare(7, c));
+//            this.whitePieces.add(this.getSquare(7, c));
         }
     }
 
