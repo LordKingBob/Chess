@@ -32,6 +32,7 @@ public class Piece {
 
     public ImageView getShape(){
         Image base = new Image(Piece.class.getResourceAsStream("/me/light/chess/Chess_Pieces_Sprite.png"));
+        // Citation: Chess Pieces by jurgenwesterhof https://commons.wikimedia.org/wiki/File:Chess_Pieces_Sprite.svg
         ImageView img = new ImageView(base);
         int x = color == 'B' ? 45 : 0;
         img.setViewport(new Rectangle2D(icon*45, x, 45, 45));

@@ -16,14 +16,13 @@ public class Main extends Application
   @Override
   public void start(Stage primaryStage) {
     VBox vbox = new VBox(4);
-    Button single = new Button("Single Player");
-    Button multi = new Button("Multiplayer");
+    Button newGame = new Button("New Game");
     Button load = new Button("Load Game");
 
-    single.setOnMousePressed(e -> primaryStage.setScene(new Scene(new GameBoard(primaryStage, "single"), 400, 400)));
+    newGame.setOnMousePressed(e -> primaryStage.setScene(new Scene(new GameBoard(primaryStage, "new_game"), 400, 400)));
     load.setOnMousePressed(e -> primaryStage.setScene(new Scene(new GameBoard(primaryStage, "load"), 400, 400)));
     
-    vbox.getChildren().addAll(single, multi, load);
+    vbox.getChildren().addAll(newGame, load);
     Scene scene = new Scene(vbox, 300, 200);
     primaryStage.setTitle("Chess");
     primaryStage.setScene(scene);
